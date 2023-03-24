@@ -1,11 +1,11 @@
 /-  *uart
-/+  default-agent, dbug
+/+  default-agent, dbug, uart
 |%
 +$  versioned-state
   $%  state-0
   ==
 +$  state-0
-  $:  [%0 read=(map dev:loch [@ @]) write=(map dev:loch @)]
+  $:  [%0 term=(map dev:loch termios:uart) read=(map dev:loch [@ @]) write=(map dev:loch @)]
   ==
 +$  card  card:agent:gall
 --
@@ -30,42 +30,89 @@
   ?-    -.act
       %read
     :_  this
-    [%pass /(scot %tas dev.act)/(scot %tas wut.act) %arvo %l %read dev.act wut.act cmd.act cnt.act]~
+    [%pass /read/(scot %tas dev.act)/(scot %tas wut.act) %arvo %l %read dev.act wut.act cmd.act cnt.act]~
   ::
       %rite
     :_  this
-    [%pass /(scot %tas dev.act)/(scot %tas wut.act) %arvo %l %rite dev.act wut.act cmd.act dat.act cnt.act]~
+    [%pass /rite/(scot %tas dev.act)/(scot %tas wut.act) %arvo %l %rite dev.act wut.act cmd.act dat.act cnt.act]~
+  ::
+      %getattr
+    :_  this
+    [%pass /getattr/(scot %tas dev.act) %arvo %l %read dev.act %con tcgets:uart 60]~
+  ::
+      %setattr
+    :_  this
+    ~
+    ::[%pass /(scot %tas dev.act)/con/getattr %arvo %l %rite dev.act %con tcsets:uart  57]~
+  ::
+      %setspeed
+    :_  this
+    ~
+  ::
+      %tcdrain
+    :_  this
+    ~
+  ::
+      %tcflow
+    :_  this
+    ~
+  ::
+      %tcflush
+    :_  this
+    ~
+  ::
+      %tcsendbreak
+    :_  this
+    ~
   ==
 ::
 ++  on-peek
   |=  =path
   ^-  (unit (unit cage))
+  ~&  >>  path
   =/  dev  `@tas`(snag 2 path)
   ?+  path  (on-peek:default path)
-    [%s %values *]  ``noun+!>((~(get by read) dev))
+    [%s %seen *]  ``noun+!>((~(get by read) dev))
+    [%s %wrot *]  ``noun+!>((~(get by write) dev))
   ==
 ++  on-arvo
   |=  [=wire =sign-arvo]
   ^-  (quip card _this)
-  =/  what    (snag 1 wire)
-  =/  device  (snag 0 wire)
-  ~&  >>>  what
-  ~&  >>>  device
-  ?+  sign-arvo  (on-arvo:default wire sign-arvo)
+  =/  cmd    (snag 0 wire)
+  =/  device  (snag 1 wire)
+  =/  cad  +.sign-arvo
+  ~&  >  ['wire' wire]
+  ~&  >  ['sign-arvo' sign-arvo]
+  ?+  cmd  (on-arvo:default wire sign-arvo)
+      %getattr
+    ?+  sign-arvo  (on-arvo:default wire sign-arvo)
       [%loch %seen *]
-    ~&  >>  dat.sign-arvo
-    :-  ~
-      %_  this
-        read  (~(put by read) device [dat.sign-arvo tus.sign-arvo])
+      =/  termio  (unpack-term:uart dat.sign-arvo)
+      ~&  ['term' termio]
+      :-  ~
+        %_  this
+          term  (~(put by term) device termio)
+        ==
       ==
     ::
-      [%loch %rote *]
-    ~&  >>  tus.sign-arvo
-    :-  ~
-      %_  this
-        write  (~(put by write) device tus.sign-arvo)
-      ==
+      %setattr
+    [~ this]
   ==
+  ::?+  sign-arvo  (on-arvo:default wire sign-arvo)
+      ::[%loch %seen *]
+    ::~&  >>  dat.sign-arvo
+    :::-  ~
+      ::%_  this
+        ::read  (~(put by read) device [dat.sign-arvo tus.sign-arvo])
+      ::==
+    ::::
+      ::[%loch %rote *]
+    ::~&  >>  tus.sign-arvo
+    :::-  ~
+      ::%_  this
+        ::write  (~(put by write) device tus.sign-arvo)
+      ::==
+  ::==
 ++  on-watch  on-watch:default
 ++  on-leave  on-leave:default
 ++  on-agent  on-agent:default
