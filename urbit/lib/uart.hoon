@@ -126,11 +126,7 @@
 ++  pack-term
   |=  =termios
   ^-  @ux
-  ::=/  bytelist
-  %+  con  %+  con  %+  con  %+  con  %+  con  %+  con
-  %+  con  %+  con  %+  con  %+  con  %+  con  %+  con
-  %+  con  %+  con  %+  con  %+  con  %+  con  %+  con
-  %+  con  %+  con  %+  con
+  ;:  con
     (lsh [3 veol2:cc:off] veol2.cc.termios)
     (lsh [3 vlnext:cc:off] vlnext.cc.termios)
     (lsh [3 vwerase:cc:off] vwerase.cc.termios)
@@ -153,6 +149,7 @@
     (lsh [3 cflag:off] cflag.termios)
     (lsh [3 oflag:off] oflag.termios)
     (lsh [3 iflag:off] iflag.termios)
+  ==
 ::
 ++  set-speed
   |=  [term=termios speed=@]
