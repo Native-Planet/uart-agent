@@ -30,7 +30,34 @@
     lflag=@ux
     line=@uxC
     cc=cc-name
-  == ::termio
+  == ::termis
+::
+++  off  |%
+  ++  iflag  0
+  ++  oflag  4
+  ++  cflag  8
+  ++  lflag  12
+  ++  line   16
+  ++  cc  |%
+    ++  vintr     17
+    ++  vquit     18
+    ++  verase    19
+    ++  vkill     20
+    ++  veof      21
+    ++  vtime     22
+    ++  vmin      23
+    ++  vswtc     24
+    ++  vstart    25
+    ++  vstop     26
+    ++  vsusp     27
+    ++  veol      28
+    ++  vreprint  29
+    ++  vdiscard  30
+    ++  vwerase   31
+    ++  vlnext    32
+    ++  veol2     33
+  --
+--
 ::
 ++  baud  |%
   ++  cbaud     10.017
@@ -72,30 +99,60 @@
   ^-  termios
   =/  termios  *termios
   %_  termios
-    iflag  (cut 3 [0 4] bytestr)
-    oflag  (cut 3 [4 4] bytestr)
-    cflag  (cut 3 [8 4] bytestr)
-    lflag  (cut 3 [12 4] bytestr)
-    line   (cut 3 [16 1] bytestr)
-    vintr.cc     (cut 3 [17 1] bytestr)
-    vquit.cc     (cut 3 [18 1] bytestr)
-    verase.cc    (cut 3 [19 1] bytestr)
-    vkill.cc     (cut 3 [20 1] bytestr)
-    veof.cc      (cut 3 [21 1] bytestr)
-    vtime.cc     (cut 3 [22 1] bytestr)
-    vmin.cc      (cut 3 [23 1] bytestr)
-    vswtc.cc     (cut 3 [24 1] bytestr)
-    vstart.cc    (cut 3 [25 1] bytestr)
-    vstop.cc     (cut 3 [26 1] bytestr)
-    vsusp.cc     (cut 3 [27 1] bytestr)
-    veol.cc      (cut 3 [28 1] bytestr)
-    vreprint.cc  (cut 3 [29 1] bytestr)
-    vdiscard.cc  (cut 3 [30 1] bytestr)
-    vwerase.cc   (cut 3 [31 1] bytestr)
-    vlnext.cc    (cut 3 [32 1] bytestr)
-    veol2.cc     (cut 3 [33 1] bytestr)
+    iflag        (cut 3 [iflag:off 4] bytestr)
+    oflag        (cut 3 [oflag:off 4] bytestr)
+    cflag        (cut 3 [cflag:off 4] bytestr)
+    lflag        (cut 3 [lflag:off 4] bytestr)
+    line         (cut 3 [line:off 1] bytestr)
+    vintr.cc     (cut 3 [vintr:cc:off 1] bytestr)
+    vquit.cc     (cut 3 [vquit:cc:off 1] bytestr)
+    verase.cc    (cut 3 [verase:cc:off 1] bytestr)
+    vkill.cc     (cut 3 [vkill:cc:off 1] bytestr)
+    veof.cc      (cut 3 [veof:cc:off 1] bytestr)
+    vtime.cc     (cut 3 [vtime:cc:off 1] bytestr)
+    vmin.cc      (cut 3 [vmin:cc:off 1] bytestr)
+    vswtc.cc     (cut 3 [vswtc:cc:off 1] bytestr)
+    vstart.cc    (cut 3 [vstart:cc:off 1] bytestr)
+    vstop.cc     (cut 3 [vstop:cc:off 1] bytestr)
+    vsusp.cc     (cut 3 [vsusp:cc:off 1] bytestr)
+    veol.cc      (cut 3 [veol:cc:off 1] bytestr)
+    vreprint.cc  (cut 3 [vreprint:cc:off 1] bytestr)
+    vdiscard.cc  (cut 3 [vdiscard:cc:off 1] bytestr)
+    vwerase.cc   (cut 3 [vwerase:cc:off 1] bytestr)
+    vlnext.cc    (cut 3 [vlnext:cc:off 1] bytestr)
+    veol2.cc     (cut 3 [veol2:cc:off 1] bytestr)
   ==
-  ::termios
+::
+++  pack-term
+  |=  =termios
+  ^-  @ux
+  ::=/  bytelist
+  %+  con  %+  con  %+  con  %+  con  %+  con  %+  con
+  %+  con  %+  con  %+  con  %+  con  %+  con  %+  con
+  %+  con  %+  con  %+  con  %+  con  %+  con  %+  con
+  %+  con  %+  con  %+  con
+    (lsh [3 veol2:cc:off] veol2.cc.termios)
+    (lsh [3 vlnext:cc:off] vlnext.cc.termios)
+    (lsh [3 vwerase:cc:off] vwerase.cc.termios)
+    (lsh [3 vdiscard:cc:off] vdiscard.cc.termios)
+    (lsh [3 vreprint:cc:off] vreprint.cc.termios)
+    (lsh [3 veol:cc:off] veol.cc.termios)
+    (lsh [3 vsusp:cc:off] vsusp.cc.termios)
+    (lsh [3 vstop:cc:off] vstop.cc.termios)
+    (lsh [3 vstart:cc:off] vstart.cc.termios)
+    (lsh [3 vswtc:cc:off] vswtc.cc.termios)
+    (lsh [3 vmin:cc:off] vmin.cc.termios)
+    (lsh [3 vtime:cc:off] vtime.cc.termios)
+    (lsh [3 veof:cc:off] veof.cc.termios)
+    (lsh [3 vkill:cc:off] vkill.cc.termios)
+    (lsh [3 verase:cc:off] verase.cc.termios)
+    (lsh [3 vquit:cc:off] vquit.cc.termios)
+    (lsh [3 vintr:cc:off] vintr.cc.termios)
+    (lsh [3 line:off] line.termios)
+    (lsh [3 lflag:off] lflag.termios)
+    (lsh [3 cflag:off] cflag.termios)
+    (lsh [3 oflag:off] oflag.termios)
+    (lsh [3 iflag:off] iflag.termios)
 ::
 ++  set-speed
   |=  [term=termios speed=@]

@@ -41,13 +41,16 @@
     [%pass /getattr/(scot %tas dev.act) %arvo %l %read dev.act %con tcgets:uart 60]~
   ::
       %setattr
+    =/  termios  (pack-term:uart (~(got by term:this) dev.act))
     :_  this
-    ~
-    ::[%pass /(scot %tas dev.act)/con/getattr %arvo %l %rite dev.act %con tcsets:uart  57]~
+    [%pass /setattr/(scot %tas dev.act) %arvo %l %rite dev.act %con tcsets:uart termios 60]~
   ::
       %setspeed
-    :_  this
-    ~
+    :-  ~
+      =/  termios  (set-speed:uart (~(got by term:this) dev.act) baud.act)
+      %_  this
+       term  (~(put by term) dev.act termios)
+      ==
   ::
       %tcdrain
     :_  this
