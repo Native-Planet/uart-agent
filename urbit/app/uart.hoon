@@ -54,19 +54,19 @@
   ::
       %tcdrain
     :_  this
-    ~
+    [%pass /tcdrain/(scot %tas dev.act) %arvo %l %rite dev.act %con tcsbrk:uart 1 1]~
   ::
       %tcflow
     :_  this
-    ~
+    [%pass /tcflow/(scot %tas dev.act) %arvo %l %rite dev.act %con tcxonc:uart action.act 4]~
   ::
       %tcflush
     :_  this
-    ~
+    [%pass /tcflush/(scot %tas dev.act) %arvo %l %rite dev.act %con tcflsh:uart queue.act 4]~
   ::
       %tcsendbreak
     :_  this
-    ~
+    [%pass /tcflush/(scot %tas dev.act) %arvo %l %rite dev.act %con tcsbrk:uart 0 1]~
   ==
 ::
 ++  on-peek
@@ -100,22 +100,40 @@
     ::
       %setattr
     [~ this]
+    ::
+      %setspeed
+    [~ this]
+    ::
+      %tcdrain
+    [~ this]
+    ::
+      %tcflow
+    [~ this]
+    ::
+      %tcflush
+    [~ this]
+    ::
+      %tcsendbreak
+    [~ this]
+    ::
+      %rite
+    ?+  sign-arvo  (on-arvo:default wire sign-arvo)
+      [%loch %rote *]
+      :-  ~
+        %_  this
+          write  (~(put by write) device tus.sign-arvo)
+        ==
+      ==
+    ::
+      %read
+    ?+  sign-arvo  (on-arvo:default wire sign-arvo)
+      [%loch %seen *]
+      :-  ~
+        %_  this
+          read  (~(put by read) device [dat.sign-arvo tus.sign-arvo])
+        ==
+      ==
   ==
-  ::?+  sign-arvo  (on-arvo:default wire sign-arvo)
-      ::[%loch %seen *]
-    ::~&  >>  dat.sign-arvo
-    :::-  ~
-      ::%_  this
-        ::read  (~(put by read) device [dat.sign-arvo tus.sign-arvo])
-      ::==
-    ::::
-      ::[%loch %rote *]
-    ::~&  >>  tus.sign-arvo
-    :::-  ~
-      ::%_  this
-        ::write  (~(put by write) device tus.sign-arvo)
-      ::==
-  ::==
 ++  on-watch  on-watch:default
 ++  on-leave  on-leave:default
 ++  on-agent  on-agent:default
